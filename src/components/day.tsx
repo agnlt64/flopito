@@ -61,9 +61,9 @@ export default function Day({ courses, isLast }: { courses: CourseType[], isLast
   const mergedCourses = mergeConsecutiveCourses(sortedCourses);
 
   return (
-    <div className={`relative h-full border-l border-b ${isLast ? 'border-r' : ''} border-gray-300 dark:border-gray-700`}>
+    <div className={`relative h-full border-l ${isLast ? 'border-r' : ''} border-gray-300 dark:border-gray-700`}>
       {Array.from({ length: 13 }, (_, i) => (
-        <div key={i} className="h-16 border-t border-gray-300 dark:border-gray-700" />
+        <div key={i} className="h-16 border-t border-b border-gray-300 dark:border-gray-700" />
       ))}
       {mergedCourses.map(course => (
         <Course key={course.id} course={course} />

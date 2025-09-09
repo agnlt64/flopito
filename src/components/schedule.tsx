@@ -1,55 +1,44 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Course } from '@/lib/types';
+import { Course, Year, YEAR_GROUPS } from '@/lib/types';
 import Day from './day';
 
 const days = ['m', 'tu', 'w', 'th', 'f'];
-const dayTranslations: { [key: string]: string } = {
-  m: 'Lundi',
-  tu: 'Mardi',
-  w: 'Mercredi',
-  th: 'Jeudi',
-  f: 'Vendredi',
+
+const YEAR_TRAIN_PROG_MAP: Record<Year, string> = {
+  BUT1: 'BUT1',
+  BUT2I: 'BUT2',
+  BUT3I: 'BUT3',
 };
 
 export default function Schedule() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [groups, setGroups] = useState<{ id: number; train_prog: string; name: string; is_structural: boolean; }[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string>('All');
+  const [selectedYear, setSelectedYear] = useState<Year>('BUT1');
+  const [selectedGroup, setSelectedGroup] = useState<string>(YEAR_GROUPS.BUT1[0].name);
 
   useEffect(() => {
     fetch('https://flopedt.iut-amiens.fr/fr/api/fetch/scheduledcourses/?dept=INFO&week=37&year=2025&work_copy=0')
       .then(response => response.json())
       .then(data => {
         setCourses(data);
-        const allGroups = data.flatMap((course: Course) => course.course.groups);
-        const uniqueGroupsMap = new Map<number, { id: number; train_prog: string; name: string; is_structural: boolean; }>();
-        allGroups.forEach(group => {
-          if (!uniqueGroupsMap.has(group.id)) {
-            uniqueGroupsMap.set(group.id, group);
-          }
-        });
-        const uniqueGroups = Array.from(uniqueGroupsMap.values());
-        setGroups(uniqueGroups);
       });
   }, []);
 
-  const filteredCourses = selectedGroup === 'All'
-    ? courses
-    : courses.filter(course => {
-        const selectedGroupObject = groups.find(g => g.name === selectedGroup);
-        if (!selectedGroupObject) return false;
+  const availableGroups = YEAR_GROUPS[selectedYear];
 
-        const selectedTrainProg = selectedGroupObject.train_prog;
-        const courseGroups = course.course.groups.map(g => g.name);
-        const courseTrainProgs = course.course.groups.map(g => g.train_prog);
+  const filteredCourses = courses.filter(course => {
+    const selectedTrainProgForYear = YEAR_TRAIN_PROG_MAP[selectedYear];
 
-        const isGroupMatch = courseGroups.includes(selectedGroup) || courseGroups.includes(selectedGroupObject.train_prog);
-        const isAmphiMatch = course.course.room_type === 'AMPHI' && courseTrainProgs.includes(selectedTrainProg);
+    const isGroupMatch = course.course.groups.some(group =>
+      group.name === selectedGroup && group.train_prog === selectedTrainProgForYear
+    );
 
-        return isGroupMatch || isAmphiMatch;
-      });
+    const isAmphiMatch = course.course.room_type === 'AMPHI' &&
+                         course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
+
+    return isGroupMatch || isAmphiMatch;
+  });
 
   const coursesByDay = filteredCourses.reduce((acc, course) => {
     const day = course.day;
@@ -61,26 +50,41 @@ export default function Schedule() {
   }, {} as { [key: string]: Course[] });
 
   return (
-    <div className="container mx-auto px-4 overflow-hidden">
-      <div className="flex justify-end mb-4">
-        <select
-          onChange={(e) => setSelectedGroup(e.target.value)}
-          value={selectedGroup}
-          className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-900 dark:text-gray-100"
-        >
-          <option value="All">All</option>
-          {groups.map(group => (
-            <option key={group.id} value={group.name}>{group.name}</option>
-          ))}
-        </select>
+    <div className="container mx-auto px-4 py-4 overflow-hidden">
+      <div className="flex justify-start mb-4 space-x-4">
+        <div>
+          <label htmlFor="promo-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Promo</label>
+          <select
+            id="promo-select"
+            onChange={(e) => {
+              const year = e.target.value as Year;
+              setSelectedYear(year);
+              setSelectedGroup(YEAR_GROUPS[year][0].name); // Select first group of new year
+            }}
+            value={selectedYear}
+            className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-900 dark:text-gray-100"
+          >
+            {Object.keys(YEAR_GROUPS).map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="group-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Groupe</label>
+          <select
+            id="group-select"
+            onChange={(e) => setSelectedGroup(e.target.value)}
+            value={selectedGroup}
+            className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-900 dark:text-gray-100"
+          >
+            {availableGroups.map(group => (
+              <option key={group.name} value={group.name}>{group.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
-      <div className="grid grid-cols-[auto_repeat(5,1fr)]">
-        <div />
-        {days.map(day => (
-          <div key={day} className="text-center font-bold">{dayTranslations[day]}</div>
-        ))}
-      </div>
-      <div className="grid grid-cols-[auto_repeat(5,1fr)]">
+      <div className="grid grid-cols-[auto_repeat(5,1fr)] h-[832px] border-b border-gray-300 dark:border-gray-700">
         <div className="row-span-full flex flex-col text-right pr-2 -mt-3">
           {Array.from({ length: 13 }, (_, i) => (
             <div key={i} className="h-16">{i + 8}:00</div>
@@ -93,5 +97,3 @@ export default function Schedule() {
     </div>
   );
 }
-
-

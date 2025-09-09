@@ -7,7 +7,7 @@ export const TEACHERS_MAP = new Map<string, string>([
     ["DuDa", "David DURAND"],
     ["BiCh", "Chantal BIELAWSKI"],
     ["BaMa", "Maxime BAUMANN"],
-    ["PeKe", "Kévin PECRO"],
+    ["PeKe", "Kévin PÉCRO"],
     ["HeLa", "Laurent HERJEAN"],
     ["MaJe", "Jean-Baptiste MASSON"],
     ["BoPa", "Pascal BOURDE"],
