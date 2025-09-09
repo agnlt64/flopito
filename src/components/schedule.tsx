@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Course, Year, YEAR_GROUPS } from '@/lib/types';
 import Day from './day';
+import CourseModal from './course-modal';
 
 const days = ['m', 'tu', 'w', 'th', 'f'];
 
@@ -16,6 +17,8 @@ export default function Schedule() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedYear, setSelectedYear] = useState<Year>('BUT1');
   const [selectedGroup, setSelectedGroup] = useState<string>(YEAR_GROUPS.BUT1[0].name);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
 
   useEffect(() => {
     fetch('https://flopedt.iut-amiens.fr/fr/api/fetch/scheduledcourses/?dept=INFO&week=37&year=2025&work_copy=0')
@@ -48,6 +51,16 @@ export default function Schedule() {
     acc[day].push(course);
     return acc;
   }, {} as { [key: string]: Course[] });
+
+  const handleCourseClick = (course: Course) => {
+    setSelectedCourseForModal(course);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCourseForModal(null);
+  };
 
   return (
     <div className="container mx-auto px-4 py-4 overflow-hidden">
@@ -91,9 +104,13 @@ export default function Schedule() {
           ))}
         </div>
         {days.map((day, index) => (
-          <Day key={day} courses={coursesByDay[day] || []} isLast={index === days.length - 1} />
+          <Day key={day} courses={coursesByDay[day] || []} isLast={index === days.length - 1} onCourseClick={handleCourseClick} />
         ))}
       </div>
+
+      {isModalOpen && (
+        <CourseModal course={selectedCourseForModal} onClose={handleCloseModal} />
+      )}
     </div>
   );
 }

@@ -1,10 +1,13 @@
-
 import Schedule from "@/components/schedule";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function SchedulePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
-      <div className="z-10 w-full max-w-7xl items-center justify-between font-mono text-sm lg:flex">
+    <main className="flex min-h-screen flex-col items-center relative">
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
+      <div className="z-10 w-full p-4 font-mono">
         <Schedule />
       </div>
     </main>

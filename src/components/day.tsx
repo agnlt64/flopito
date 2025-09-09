@@ -1,22 +1,6 @@
 import Course from './course';
 import { Course as CourseType } from '@/lib/types';
-
-function getDurationInMinutes(type: string): number {
-  if (type.includes('1h')) return 60;
-  if (type.includes('1h30')) return 90;
-  if (type.includes('2h')) return 120;
-  if (type.includes('3h')) return 180;
-  if (type.includes('4h')) return 240;
-  switch (type) {
-    case 'CM':
-      return 120;
-    case 'TD':
-    case 'TP':
-      return 90;
-    default:
-      return 90;
-  }
-}
+import { getDurationInMinutes } from '@/lib/utils';
 
 function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
   if (courses.length < 2) {
@@ -56,7 +40,7 @@ function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
   return mergedCourses;
 }
 
-export default function Day({ courses, isLast }: { courses: CourseType[], isLast?: boolean }) {
+export default function Day({ courses, isLast, onCourseClick }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void }) {
   const sortedCourses = courses.sort((a, b) => a.start_time - b.start_time);
   const mergedCourses = mergeConsecutiveCourses(sortedCourses);
 
@@ -66,7 +50,7 @@ export default function Day({ courses, isLast }: { courses: CourseType[], isLast
         <div key={i} className="h-16 border-t border-b border-gray-300 dark:border-gray-700" />
       ))}
       {mergedCourses.map(course => (
-        <Course key={course.id} course={course} />
+        <Course key={course.id} course={course} onClick={onCourseClick} />
       ))}
     </div>
   );

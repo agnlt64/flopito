@@ -27,7 +27,6 @@ export interface CourseDetails {
     name: string;
     is_structural: boolean;
   }[];
-  supp_tutor: any[];
   module: Module;
   pay_module: null;
   is_graded: boolean;
