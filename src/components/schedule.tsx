@@ -119,7 +119,7 @@ export default function Schedule() {
 
   return (
     <div className="container mx-auto px-4 py-4 overflow-hidden">
-      <div className="flex justify-start mb-4 space-x-4">
+      <div className="flex flex-col md:flex-row justify-start mb-4 space-y-6 md:space-y-0 md:space-x-4">
         <div>
           <label htmlFor="promo-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Promo</label>
           <select

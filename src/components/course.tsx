@@ -23,9 +23,10 @@ export default function Course({ course, onClick }: { course: Course, onClick: (
       <div className="absolute top-1 right-2 transition-opacity duration-300">
         <Ellipsis size={20} color={course.course.module.display.color_txt} />
       </div>
-      <div className="text-sm font-bold tracking-tight leading-tight">{course.course.module.name}</div>
-      <div className="text-xs">{getRoomLabel(course.room.name, course.course.room_type)}</div>
-      {duration > 60 && <div className="text-xs">Prof: {teacherName}</div>}
+      <div className="text-sm font-bold tracking-tight leading-tight hidden sm:block">{course.course.module.name}</div>
+      <div className="text-xs sm:text-sm">{getRoomLabel(course.room.name, course.course.room_type)}</div>
+      <div className="text-xs sm:hidden">{course.course.module.abbrev}</div>
+      {duration > 60 && <div className="text-xs hidden sm:block">Prof: {teacherName}</div>}
     </div>
   );
 }
