@@ -37,6 +37,10 @@ export default function Schedule() {
       group.name === selectedGroup && group.train_prog === selectedTrainProgForYear
     );
 
+    if (selectedYear === 'BUT3I') {
+      return isGroupMatch;
+    }
+
     const isAmphiMatch = course.course.room_type === 'AMPHI' &&
                          course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
 
@@ -66,7 +70,7 @@ export default function Schedule() {
     <div className="container mx-auto px-4 py-4 overflow-hidden">
       <div className="flex justify-start mb-4 space-x-4">
         <div>
-          <label htmlFor="promo-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Promo</label>
+          <label htmlFor="promo-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Promo</label>
           <select
             id="promo-select"
             onChange={(e) => {
@@ -84,7 +88,7 @@ export default function Schedule() {
         </div>
 
         <div>
-          <label htmlFor="group-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Groupe</label>
+          <label htmlFor="group-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Groupe</label>
           <select
             id="group-select"
             onChange={(e) => setSelectedGroup(e.target.value)}
