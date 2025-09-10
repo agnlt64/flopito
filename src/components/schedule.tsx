@@ -46,7 +46,7 @@ export default function Schedule() {
         if (showAmphiParam !== null && (showAmphiParam === 'true') !== showAmphiCourses) {
           setShowAmphiCourses(showAmphiParam === 'true');
         }
-      }, [searchParams]); // Depend on searchParams to re-run when URL changes
+      }, [searchParams, selectedYear, selectedGroup, showAmphiCourses]); // Depend on searchParams to re-run when URL changes
 
   useEffect(() => {
         const today = new Date();
@@ -184,7 +184,7 @@ export default function Schedule() {
           </div>
           <div>
             <p className="font-bold">Attention</p>
-            <p className="text-sm">Cette application est juste un frontend plus joli que celui proposé par l'IUT. Les salles peuvent être incorrectes. Je ne suis pas responsable des données présentes sur ce site.</p>
+            <p className="text-sm">Cette application est juste un frontend plus joli que celui proposé par l&apos;IUT. Les salles peuvent être incorrectes. Je ne suis pas responsable des données présentes sur ce site.</p>
           </div>
         </div>
       </div>

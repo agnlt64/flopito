@@ -1,5 +1,6 @@
 import Schedule from "@/components/schedule";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Suspense } from "react";
 
 export default function SchedulePage() {
   return (
@@ -8,7 +9,9 @@ export default function SchedulePage() {
         <ThemeToggle />
       </div>
       <div className="z-10 w-full p-4 font-mono">
-        <Schedule />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Schedule />
+        </Suspense>
       </div>
     </main>
   );
