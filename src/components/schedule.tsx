@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { AlertTriangle } from 'lucide-react';
 import { Course, Year, YEAR_GROUPS } from '@/lib/types';
 import Day from './day';
 import CourseModal from './course-modal';
@@ -26,18 +27,24 @@ export default function Schedule() {
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
         const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
+        const initialShowAmphi = searchParams.get('showAmphi') === 'true';
+        const [showAmphiCourses, setShowAmphiCourses] = useState<boolean>(initialShowAmphi);
 
       const courseCache = useRef(new Map<string, Course[]>());
 
       useEffect(() => {
         const yearParam = (searchParams.get('year') as Year);
         const groupParam = searchParams.get('group');
+        const showAmphiParam = searchParams.get('showAmphi');
 
         if (yearParam && yearParam !== selectedYear) {
           setSelectedYear(yearParam);
         }
         if (groupParam && groupParam !== selectedGroup) {
           setSelectedGroup(groupParam);
+        }
+        if (showAmphiParam !== null && (showAmphiParam === 'true') !== showAmphiCourses) {
+          setShowAmphiCourses(showAmphiParam === 'true');
         }
       }, [searchParams]); // Depend on searchParams to re-run when URL changes
 
@@ -81,7 +88,12 @@ export default function Schedule() {
     }
 
     const isAmphiMatch = course.course.room_type === 'AMPHI' &&
-                         course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
+                           course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
+
+    // If showAmphiCourses is false, and it's an Amphi course, exclude it
+    if (!showAmphiCourses && course.course.room_type === 'AMPHI') {
+      return false;
+    }
 
     return isGroupMatch || isAmphiMatch;
   });
@@ -146,6 +158,34 @@ export default function Schedule() {
               <option key={group.name} value={group.name}>{group.name}</option>
             ))}
           </select>
+        </div>
+
+        <div className="flex items-center mt-2">
+          <input
+            type="checkbox"
+            id="show-amphi"
+            checked={showAmphiCourses}
+            onChange={(e) => {
+              const newShowAmphi = e.target.checked;
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('showAmphi', newShowAmphi.toString());
+              router.replace(`?${params.toString()}`);
+            }}
+            className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-blue-600"
+          />
+          <label htmlFor="show-amphi" className="text-md font-medium text-gray-700 dark:text-gray-300">Afficher les amphis</label>
+        </div>
+      </div>
+
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 mb-4 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-300" role="alert">
+        <div className="flex items-center">
+          <div className="py-1">
+            <AlertTriangle className="h-6 w-6 text-yellow-500 dark:text-yellow-300 mr-4" />
+          </div>
+          <div>
+            <p className="font-bold">Attention</p>
+            <p className="text-sm">Cette application est juste un frontend plus joli que celui proposé par l'IUT. Les salles peuvent être incorrectes. Je ne suis pas responsable des données présentes sur ce site.</p>
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-[auto_repeat(5,1fr)] h-[832px] border-b border-gray-300 dark:border-gray-700">
