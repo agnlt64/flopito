@@ -1,7 +1,7 @@
 
 export const TEACHERS_MAP = new Map<string, string>([
     ["LoCh", "Christophe LOGÉ"],
-    ["CoOl", "Olivia CONFLANS"],
+    ["CoOl", "Olivia CONFLANT"],
     ["MaBr", "Bruno MAHRIC"],
     ["LaTh", "Thomas LANGLET"],
     ["DuDa", "David DURAND"],

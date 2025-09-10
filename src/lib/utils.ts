@@ -11,13 +11,20 @@ export function getDurationInMinutes(type: string): number {
   if (type.includes('2h')) return 120;
   if (type.includes('3h')) return 180;
   if (type.includes('4h')) return 240;
-  switch (type) {
-    case 'CM':
-      return 120;
-    case 'TD':
-    case 'TP':
-      return 90;
-    default:
-      return 90;
+  return -1;
+}
+
+export function getRoomLabel(roomName: string, roomType: string): string {
+  if (roomName === 'BC') {
+    roomName = 'Bloc central';
+  } else if (roomName === 'NA') {
+    roomName = 'Nouvel amphi';
+  } else if (roomName === 'GMP') {
+    roomName = 'Lambert (probablement)';
+  }
+  if (roomType === 'AMPHI') {
+    return `Amphi : ${roomName}`;
+  } else {
+    return `Salle : ${roomName}`;
   }
 }

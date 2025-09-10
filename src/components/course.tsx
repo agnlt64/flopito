@@ -1,6 +1,7 @@
+import { Ellipsis } from 'lucide-react';
 import type { Course } from '@/lib/types';
 import { TEACHERS_MAP } from '@/lib/teachers-map';
-import { getDurationInMinutes } from '@/lib/utils';
+import { getDurationInMinutes, getRoomLabel } from '@/lib/utils';
 
 export default function Course({ course, onClick }: { course: Course, onClick: (course: Course) => void }) {
   const duration = course.duration || getDurationInMinutes(course.course.type);
@@ -10,7 +11,7 @@ export default function Course({ course, onClick }: { course: Course, onClick: (
 
   return (
     <div
-      className="absolute w-full p-2 rounded-lg shadow-md flex flex-col text-center justify-center z-10 cursor-pointer"
+      className="group absolute w-full p-2 rounded-lg shadow-md flex flex-col text-center justify-center cursor-pointer transition-all duration-300 hover:brightness-90"
       style={{
         top: `${top}px`,
         height: `${height}px`,
@@ -19,8 +20,11 @@ export default function Course({ course, onClick }: { course: Course, onClick: (
       }}
       onClick={() => onClick(course)}
     >
+      <div className="absolute top-1 right-2 transition-opacity duration-300">
+        <Ellipsis size={20} color={course.course.module.display.color_txt} />
+      </div>
       <div className="text-sm font-bold tracking-tight leading-tight">{course.course.module.name}</div>
-      <div className="text-xs">Salle: {course.room.name === 'NA' ? 'Nouvel amphi' : (course.room.name === 'BC' ? 'Bloc central' : course.room.name)}</div>
+      <div className="text-xs">{getRoomLabel(course.room.name, course.course.room_type)}</div>
       {duration > 60 && <div className="text-xs">Prof: {teacherName}</div>}
     </div>
   );
