@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, X } from 'lucide-react';
 import { Course, Year, YEAR_GROUPS } from '@/lib/types';
 import Day from './day';
 import CourseModal from './course-modal';
@@ -26,53 +26,54 @@ export default function Schedule() {
   const [selectedYear, setSelectedYear] = useState<Year>(initialYear);
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-        const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
-        const initialShowAmphi = true;
-        const [showAmphiCourses, setShowAmphiCourses] = useState<boolean>(initialShowAmphi);
+  const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
+  const initialShowAmphi = true;
+  const [showAmphiCourses, setShowAmphiCourses] = useState<boolean>(initialShowAmphi);
+  const [isWarningVisible, setIsWarningVisible] = useState<boolean>(true);
 
-      const courseCache = useRef(new Map<string, Course[]>());
-
-      useEffect(() => {
-        const yearParam = (searchParams.get('year') as Year);
-        const groupParam = searchParams.get('group');
-        const showAmphiParam = searchParams.get('showAmphi');
-
-        if (yearParam && yearParam !== selectedYear) {
-          setSelectedYear(yearParam);
-        }
-        if (groupParam && groupParam !== selectedGroup) {
-          setSelectedGroup(groupParam);
-        }
-        if (showAmphiParam !== null && (showAmphiParam === 'true') !== showAmphiCourses) {
-          setShowAmphiCourses(showAmphiParam === 'true');
-        }
-      }, [searchParams, selectedYear, selectedGroup, showAmphiCourses]); // Depend on searchParams to re-run when URL changes
+  const courseCache = useRef(new Map<string, Course[]>());
 
   useEffect(() => {
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const startOfYear = new Date(currentYear, 0, 1);
-        const diff = today.getTime() - startOfYear.getTime();
-        const oneDay = 1000 * 60 * 60 * 24;
-        const dayOfYear = Math.floor(diff / oneDay);
-        const currentWeek = Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7);
+    const yearParam = (searchParams.get('year') as Year);
+    const groupParam = searchParams.get('group');
+    const showAmphiParam = searchParams.get('showAmphi');
 
-        const cacheKey = `${currentWeek}-${currentYear}`;
+    if (yearParam && yearParam !== selectedYear) {
+      setSelectedYear(yearParam);
+    }
+    if (groupParam && groupParam !== selectedGroup) {
+      setSelectedGroup(groupParam);
+    }
+    if (showAmphiParam !== null && (showAmphiParam === 'true') !== showAmphiCourses) {
+      setShowAmphiCourses(showAmphiParam === 'true');
+    }
+  }, [searchParams, selectedYear, selectedGroup, showAmphiCourses]); // Depend on searchParams to re-run when URL changes
 
-        if (courseCache.current.has(cacheKey)) {
-          setCourses(courseCache.current.get(cacheKey)!);
-          return;
-        }
+  useEffect(() => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const startOfYear = new Date(currentYear, 0, 1);
+    const diff = today.getTime() - startOfYear.getTime();
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    const currentWeek = Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7);
 
-        const apiUrl = `https://flopedt.iut-amiens.fr/fr/api/fetch/scheduledcourses/?dept=INFO&week=${currentWeek}&year=${currentYear}&work_copy=0`;
+    const cacheKey = `${currentWeek}-${currentYear}`;
 
-        fetch(apiUrl)
-          .then(response => response.json())
-          .then(data => {
-            courseCache.current.set(cacheKey, data);
-            setCourses(data);
-          });
-      }, [selectedYear, selectedGroup]);
+    if (courseCache.current.has(cacheKey)) {
+      setCourses(courseCache.current.get(cacheKey)!);
+      return;
+    }
+
+    const apiUrl = `https://flopedt.iut-amiens.fr/fr/api/fetch/scheduledcourses/?dept=INFO&week=${currentWeek}&year=${currentYear}&work_copy=0`;
+
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        courseCache.current.set(cacheKey, data);
+        setCourses(data);
+      });
+  }, [selectedYear, selectedGroup]);
 
   const availableGroups = YEAR_GROUPS[selectedYear];
 
@@ -172,17 +173,25 @@ export default function Schedule() {
         </div>
       </div>
 
-      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 mb-4 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-300" role="alert">
-        <div className="flex items-center">
-          <div className="py-1">
-            <AlertTriangle className="h-6 w-6 text-yellow-500 dark:text-yellow-300 mr-4" />
-          </div>
-          <div>
-            <p className="font-bold">Attention</p>
-            <p className="text-sm">Cette application est juste un frontend plus joli que celui proposé par l&apos;IUT. Les salles peuvent être incorrectes. Je ne suis pas responsable des données présentes sur ce site.</p>
+      {isWarningVisible && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 mb-4 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-300" role="alert">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="py-1">
+                <AlertTriangle className="h-6 w-6 text-yellow-500 dark:text-yellow-300 mr-4" />
+              </div>
+              <div>
+                <p className="font-bold">Attention</p>
+                <p className="text-sm">Cette application est juste un frontend plus joli que celui proposé par l&apos;IUT. Les salles peuvent être incorrectes. Je ne suis pas responsable des données présentes sur ce site.</p>
+              </div>
+            </div>
+            <button onClick={() => setIsWarningVisible(false)} className="p-1 cursor-pointer">
+              <X className="h-5 w-5" />
+            </button>
           </div>
         </div>
-      </div>
+      )}
+
       <div className="grid grid-cols-[auto_repeat(5,1fr)] h-[832px] border-b border-gray-300 dark:border-gray-700">
         <div className="row-span-full flex flex-col text-right pr-2 -mt-3">
           {Array.from({ length: 13 }, (_, i) => (
