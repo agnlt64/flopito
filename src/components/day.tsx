@@ -40,7 +40,7 @@ function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
   return mergedCourses;
 }
 
-export default function Day({ courses, isLast, onCourseClick }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void }) {
+export default function Day({ courses, isLast, onCourseClick, showAmphiCourses }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean }) {
   const sortedCourses = courses.sort((a, b) => a.start_time - b.start_time);
   const mergedCourses = mergeConsecutiveCourses(sortedCourses);
 
@@ -50,7 +50,7 @@ export default function Day({ courses, isLast, onCourseClick }: { courses: Cours
         <div key={i} className="h-16 border-t border-b border-gray-300 dark:border-gray-700" />
       ))}
       {mergedCourses.map(course => (
-        <Course key={course.id} course={course} onClick={onCourseClick} />
+        <Course key={course.id} course={course} onClick={onCourseClick} showAmphiCourses={showAmphiCourses} />
       ))}
     </div>
   );

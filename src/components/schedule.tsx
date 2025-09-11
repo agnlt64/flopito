@@ -27,7 +27,7 @@ export default function Schedule() {
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
         const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
-        const initialShowAmphi = searchParams.get('showAmphi') === 'true';
+        const initialShowAmphi = true;
         const [showAmphiCourses, setShowAmphiCourses] = useState<boolean>(initialShowAmphi);
 
       const courseCache = useRef(new Map<string, Course[]>());
@@ -89,11 +89,6 @@ export default function Schedule() {
 
     const isAmphiMatch = course.course.room_type === 'AMPHI' &&
                            course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
-
-    // If showAmphiCourses is false, and it's an Amphi course, exclude it
-    if (!showAmphiCourses && course.course.room_type === 'AMPHI') {
-      return false;
-    }
 
     return isGroupMatch || isAmphiMatch;
   });
@@ -195,7 +190,7 @@ export default function Schedule() {
           ))}
         </div>
         {days.map((day, index) => (
-          <Day key={day} courses={coursesByDay[day] || []} isLast={index === days.length - 1} onCourseClick={handleCourseClick} />
+          <Day key={day} courses={coursesByDay[day] || []} isLast={index === days.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} />
         ))}
       </div>
 
