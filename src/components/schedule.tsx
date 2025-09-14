@@ -9,7 +9,6 @@ import CourseModal from './course-modal';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Button } from './ui/button';
 
-const days = ['m', 'tu', 'w', 'th', 'f'];
 type View = 'day' | 'week';
 
 const YEAR_TRAIN_PROG_MAP: Record<Year, string> = {
@@ -150,6 +149,7 @@ export default function Schedule() {
     setSelectedCourseForModal(null);
   };
 
+  const days = ['m', 'tu', 'w', 'th', 'f'];
   const dayIndex = (currentDate.getDay() + 6) % 7;
   const currentDayShort = days[dayIndex];
 
@@ -162,9 +162,15 @@ export default function Schedule() {
     day: 'numeric',
   });
 
+  const shortFormattedDate = currentDate.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
     <div className="container mx-auto px-4 py-4 overflow-hidden">
-      <div className="flex flex-col md:flex-row justify-start mb-4 space-y-6 md:space-y-0 md:space-x-4 items-center">
+      <div className="flex flex-col md:flex-row justify-start mb-4 space-y-4 md:space-y-0 md:space-x-4 items-start md:items-center">
         <div>
           <label htmlFor="view-select" className="block text-md font-medium text-gray-700 dark:text-gray-300 mb-2">Vue</label>
           <ToggleGroup type="single" value={view} onValueChange={handleViewChange}>
@@ -172,47 +178,49 @@ export default function Schedule() {
             <ToggleGroupItem value="week">Semaine</ToggleGroupItem>
           </ToggleGroup>
         </div>
-        <div>
-          <label htmlFor="promo-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Promo</label>
-          <select
-            id="promo-select"
-            onChange={(e) => {
-              const year = e.target.value as Year;
-              const newGroup = YEAR_GROUPS[year][0].name;
-              const params = new URLSearchParams(searchParams.toString());
-              params.set('year', year);
-              params.set('group', newGroup);
-              router.replace(`?${params.toString()}`);
-            }}
-            value={selectedYear}
-            className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-900 dark:text-gray-100"
-          >
-            {Object.keys(YEAR_GROUPS).map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+        <div className="flex items-center space-x-4">
+            <div>
+              <label htmlFor="promo-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Promo</label>
+              <select
+                id="promo-select"
+                onChange={(e) => {
+                  const year = e.target.value as Year;
+                  const newGroup = YEAR_GROUPS[year][0].name;
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set('year', year);
+                  params.set('group', newGroup);
+                  router.replace(`?${params.toString()}`);
+                }}
+                value={selectedYear}
+                className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-900 dark:text-gray-100"
+              >
+                {Object.keys(YEAR_GROUPS).map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="group-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Groupe</label>
+              <select
+                id="group-select"
+                onChange={(e) => {
+                  const newGroup = e.target.value;
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set('group', newGroup);
+                  router.replace(`?${params.toString()}`);
+                }}
+                value={selectedGroup}
+                className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-900 dark:text-gray-100"
+              >
+                {availableGroups.map(group => (
+                  <option key={group.name} value={group.name}>{group.name}</option>
+                ))}
+              </select>
+            </div>
         </div>
 
-        <div>
-          <label htmlFor="group-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Groupe</label>
-          <select
-            id="group-select"
-            onChange={(e) => {
-              const newGroup = e.target.value;
-              const params = new URLSearchParams(searchParams.toString());
-              params.set('group', newGroup);
-              router.replace(`?${params.toString()}`);
-            }}
-            value={selectedGroup}
-            className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-900 dark:text-gray-100"
-          >
-            {availableGroups.map(group => (
-              <option key={group.name} value={group.name}>{group.name}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex items-center mt-2">
+        <div className="flex items-center pt-2">
           <input
             type="checkbox"
             id="show-amphi"
@@ -250,11 +258,14 @@ export default function Schedule() {
 
       {view === 'day' && (
         <div className="flex items-center justify-center mb-4">
-          <Button variant="ghost" size="icon" onClick={handlePrevDay}>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={handlePrevDay}>
             <ChevronLeft className="h-6 w-6" />
           </Button>
-          <h2 className="text-xl font-semibold mx-4">{formattedDate}</h2>
-          <Button variant="ghost" size="icon" onClick={handleNextDay}>
+          <div className="text-center mx-4 w-48 md:w-64">
+            <h2 className="text-lg md:text-xl font-semibold hidden md:block">{formattedDate}</h2>
+            <h2 className="text-lg md:text-xl font-semibold md:hidden">{shortFormattedDate}</h2>
+          </div>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={handleNextDay}>
             <ChevronRight className="h-6 w-6" />
           </Button>
         </div>
@@ -267,7 +278,7 @@ export default function Schedule() {
           ))}
         </div>
         {displayedDays.map((day, index) => (
-          <Day key={day} courses={coursesByDay[day] || []} isLast={index === displayedDays.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} />
+          <Day key={day} courses={coursesByDay[day] || []} isLast={index === displayedDays.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} view={view} />
         ))}
       </div>
 
