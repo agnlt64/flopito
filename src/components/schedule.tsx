@@ -2,19 +2,30 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Course, Year, YEAR_GROUPS } from '@/lib/types';
 import Day from './day';
 import CourseModal from './course-modal';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Button } from './ui/button';
 
 const days = ['m', 'tu', 'w', 'th', 'f'];
+type View = 'day' | 'week';
 
 const YEAR_TRAIN_PROG_MAP: Record<Year, string> = {
   BUT1: 'BUT1',
   BUT2I: 'BUT2',
   BUT3I: 'BUT3',
 };
+
+// Helper to get week number
+const getWeekNumber = (d: Date) => {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
+    return weekNo;
+}
 
 export default function Schedule() {
   const router = useRouter();
@@ -28,6 +39,7 @@ export default function Schedule() {
   const [selectedYear, setSelectedYear] = useState<Year>(initialYear);
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
   const [view, setView] = useState<View>(initialView);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
   const initialShowAmphi = true;
@@ -57,22 +69,17 @@ export default function Schedule() {
   }, [searchParams, selectedYear, selectedGroup, showAmphiCourses, view]);
 
   useEffect(() => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const startOfYear = new Date(currentYear, 0, 1);
-    const diff = today.getTime() - startOfYear.getTime();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
-    const currentWeek = Math.ceil((dayOfYear + startOfYear.getDay() + 1) / 7);
+    const week = getWeekNumber(currentDate);
+    const year = currentDate.getFullYear();
 
-    const cacheKey = `${currentWeek}-${currentYear}`;
+    const cacheKey = `${week}-${year}`;
 
     if (courseCache.current.has(cacheKey)) {
       setCourses(courseCache.current.get(cacheKey)!);
       return;
     }
 
-    const apiUrl = `https://flopedt.iut-amiens.fr/fr/api/fetch/scheduledcourses/?dept=INFO&week=${currentWeek}&year=${currentYear}&work_copy=0`;
+    const apiUrl = `https://flopedt.iut-amiens.fr/fr/api/fetch/scheduledcourses/?dept=INFO&week=${week}&year=${year}&work_copy=0`;
 
     fetch(apiUrl)
       .then(response => response.json())
@@ -80,14 +87,29 @@ export default function Schedule() {
         courseCache.current.set(cacheKey, data);
         setCourses(data);
       });
-  }, [selectedYear, selectedGroup]);
+  }, [selectedYear, selectedGroup, currentDate]);
 
   const handleViewChange = (newView: View) => {
     if (newView) {
+      if (newView === 'day') {
+        setCurrentDate(new Date());
+      }
       const params = new URLSearchParams(searchParams.toString());
       params.set('view', newView);
       router.replace(`?${params.toString()}`);
     }
+  };
+
+  const handlePrevDay = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() - 1);
+    setCurrentDate(newDate);
+  };
+
+  const handleNextDay = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + 1);
+    setCurrentDate(newDate);
   };
 
   const availableGroups = YEAR_GROUPS[selectedYear];
@@ -128,8 +150,17 @@ export default function Schedule() {
     setSelectedCourseForModal(null);
   };
 
-  const today = new Date();
-  const displayedDays = view === 'week' ? days : days.filter(d => d === days[today.getDay()]);
+  const dayIndex = (currentDate.getDay() + 6) % 7;
+  const currentDayShort = days[dayIndex];
+
+  const displayedDays = view === 'week' ? days : (currentDayShort && days.includes(currentDayShort) ? [currentDayShort] : []);
+
+  const formattedDate = currentDate.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <div className="container mx-auto px-4 py-4 overflow-hidden">
@@ -214,6 +245,18 @@ export default function Schedule() {
               <X className="h-5 w-5" />
             </button>
           </div>
+        </div>
+      )}
+
+      {view === 'day' && (
+        <div className="flex items-center justify-center mb-4">
+          <Button variant="ghost" size="icon" onClick={handlePrevDay}>
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          <h2 className="text-xl font-semibold mx-4">{formattedDate}</h2>
+          <Button variant="ghost" size="icon" onClick={handleNextDay}>
+            <ChevronRight className="h-6 w-6" />
+          </Button>
         </div>
       )}
 

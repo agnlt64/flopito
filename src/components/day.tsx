@@ -44,8 +44,15 @@ export default function Day({ courses, isLast, onCourseClick, showAmphiCourses }
   const sortedCourses = courses.sort((a, b) => a.start_time - b.start_time);
   const mergedCourses = mergeConsecutiveCourses(sortedCourses);
 
+  const dayOfWeekMap = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
+  const today = new Date();
+  const dayIndex = (today.getDay() + 6) % 7;
+  const currentDayStr = dayOfWeekMap[dayIndex];
+  const componentDay = courses.length > 0 ? courses[0].day : null;
+  const isToday = componentDay === currentDayStr;
+
   return (
-    <div className={`relative h-full border-l ${isLast ? 'border-r' : ''} border-gray-300 dark:border-gray-700`}>
+    <div className={`relative h-full border-l ${isLast ? 'border-r' : ''} border-gray-300 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-950/50' : ''}`}>
       {Array.from({ length: 13 }, (_, i) => (
         <div key={i} className="h-16 border-t border-b border-gray-300 dark:border-gray-700" />
       ))}
