@@ -6,6 +6,7 @@ import { AlertTriangle, X } from 'lucide-react';
 import { Course, Year, YEAR_GROUPS } from '@/lib/types';
 import Day from './day';
 import CourseModal from './course-modal';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 const days = ['m', 'tu', 'w', 'th', 'f'];
 
@@ -21,10 +22,12 @@ export default function Schedule() {
 
   const initialYear = (searchParams.get('year') as Year) || 'BUT1';
   const initialGroup = searchParams.get('group') || YEAR_GROUPS.BUT1[0].name;
+  const initialView = (searchParams.get('view') as View) || 'week';
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedYear, setSelectedYear] = useState<Year>(initialYear);
   const [selectedGroup, setSelectedGroup] = useState<string>(initialGroup);
+  const [view, setView] = useState<View>(initialView);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
   const initialShowAmphi = true;
@@ -37,6 +40,7 @@ export default function Schedule() {
     const yearParam = (searchParams.get('year') as Year);
     const groupParam = searchParams.get('group');
     const showAmphiParam = searchParams.get('showAmphi');
+    const viewParam = (searchParams.get('view') as View);
 
     if (yearParam && yearParam !== selectedYear) {
       setSelectedYear(yearParam);
@@ -47,7 +51,10 @@ export default function Schedule() {
     if (showAmphiParam !== null && (showAmphiParam === 'true') !== showAmphiCourses) {
       setShowAmphiCourses(showAmphiParam === 'true');
     }
-  }, [searchParams, selectedYear, selectedGroup, showAmphiCourses]); // Depend on searchParams to re-run when URL changes
+    if (viewParam && viewParam !== view) {
+      setView(viewParam);
+    }
+  }, [searchParams, selectedYear, selectedGroup, showAmphiCourses, view]);
 
   useEffect(() => {
     const today = new Date();
@@ -74,6 +81,14 @@ export default function Schedule() {
         setCourses(data);
       });
   }, [selectedYear, selectedGroup]);
+
+  const handleViewChange = (newView: View) => {
+    if (newView) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('view', newView);
+      router.replace(`?${params.toString()}`);
+    }
+  };
 
   const availableGroups = YEAR_GROUPS[selectedYear];
 
@@ -113,9 +128,19 @@ export default function Schedule() {
     setSelectedCourseForModal(null);
   };
 
+  const today = new Date();
+  const displayedDays = view === 'week' ? days : days.filter(d => d === days[today.getDay()]);
+
   return (
     <div className="container mx-auto px-4 py-4 overflow-hidden">
-      <div className="flex flex-col md:flex-row justify-start mb-4 space-y-6 md:space-y-0 md:space-x-4">
+      <div className="flex flex-col md:flex-row justify-start mb-4 space-y-6 md:space-y-0 md:space-x-4 items-center">
+        <div>
+          <label htmlFor="view-select" className="block text-md font-medium text-gray-700 dark:text-gray-300 mb-2">Vue</label>
+          <ToggleGroup type="single" value={view} onValueChange={handleViewChange}>
+            <ToggleGroupItem value="day">Jour</ToggleGroupItem>
+            <ToggleGroupItem value="week">Semaine</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
         <div>
           <label htmlFor="promo-select" className="block text-md font-medium text-gray-700 dark:text-gray-300">Promo</label>
           <select
@@ -192,14 +217,14 @@ export default function Schedule() {
         </div>
       )}
 
-      <div className="grid grid-cols-[auto_repeat(5,1fr)] h-[832px] border-b border-gray-300 dark:border-gray-700">
+      <div className={`grid h-[832px] border-b border-gray-300 dark:border-gray-700 ${view === 'week' ? 'grid-cols-[auto_repeat(5,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
         <div className="row-span-full flex flex-col text-right pr-2 -mt-3">
           {Array.from({ length: 13 }, (_, i) => (
             <div key={i} className="h-16">{i + 8}:00</div>
           ))}
         </div>
-        {days.map((day, index) => (
-          <Day key={day} courses={coursesByDay[day] || []} isLast={index === days.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} />
+        {displayedDays.map((day, index) => (
+          <Day key={day} courses={coursesByDay[day] || []} isLast={index === displayedDays.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} />
         ))}
       </div>
 
