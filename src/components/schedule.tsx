@@ -32,7 +32,7 @@ export default function Schedule() {
 
   const initialYear = (searchParams.get('year') as Year) || 'BUT1';
   const initialGroup = searchParams.get('group') || YEAR_GROUPS.BUT1[0].name;
-  const initialView = (searchParams.get('view') as View) || 'week';
+  const initialView = (searchParams.get('view') as View) || 'day';
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedYear, setSelectedYear] = useState<Year>(initialYear);
