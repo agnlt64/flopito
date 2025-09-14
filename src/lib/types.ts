@@ -1,3 +1,6 @@
+
+export const DAYS = ['m', 'tu', 'w', 'th', 'f'];
+
 export interface Course {
   id: number;
   room: Room;

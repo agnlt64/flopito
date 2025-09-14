@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AlertTriangle, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Course, Year, YEAR_GROUPS } from '@/lib/types';
+import { Course, Year, YEAR_GROUPS, DAYS } from '@/lib/types';
 import Day from './day';
 import CourseModal from './course-modal';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -149,11 +149,10 @@ export default function Schedule() {
     setSelectedCourseForModal(null);
   };
 
-  const days = ['m', 'tu', 'w', 'th', 'f'];
   const dayIndex = (currentDate.getDay() + 6) % 7;
-  const currentDayShort = days[dayIndex];
+  const currentDayShort = DAYS[dayIndex];
 
-  const displayedDays = view === 'week' ? days : (currentDayShort && days.includes(currentDayShort) ? [currentDayShort] : []);
+  const displayedDays = view === 'week' ? DAYS : (currentDayShort && DAYS.includes(currentDayShort) ? [currentDayShort] : []);
 
   const formattedDate = currentDate.toLocaleDateString('fr-FR', {
     weekday: 'long',
@@ -278,7 +277,7 @@ export default function Schedule() {
           ))}
         </div>
         {displayedDays.map((day, index) => (
-          <Day key={day} courses={coursesByDay[day] || []} isLast={index === displayedDays.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} view={view} />
+          <Day key={day} courses={coursesByDay[day] || []} isLast={index === displayedDays.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} view={view} day={day} />
         ))}
       </div>
 

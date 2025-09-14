@@ -1,5 +1,5 @@
 import Course from './course';
-import { Course as CourseType } from '@/lib/types';
+import { Course as CourseType, DAYS } from '@/lib/types';
 import { getDurationInMinutes } from '@/lib/utils';
 
 function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
@@ -40,16 +40,14 @@ function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
   return mergedCourses;
 }
 
-export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, view }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week' }) {
+export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, view, day }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week', day: string }) {
   const sortedCourses = courses.sort((a, b) => a.start_time - b.start_time);
   const mergedCourses = mergeConsecutiveCourses(sortedCourses);
 
-  const dayOfWeekMap = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su'];
   const today = new Date();
   const dayIndex = (today.getDay() + 6) % 7;
-  const currentDayStr = dayOfWeekMap[dayIndex];
-  const componentDay = courses.length > 0 ? courses[0].day : null;
-  const isToday = componentDay === currentDayStr;
+  const currentDayStr = DAYS[dayIndex];
+  const isToday = day === currentDayStr;
 
   return (
     <div className={`relative h-full border-l ${isLast ? 'border-r' : ''} border-gray-300 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-950/50' : ''}`}>
