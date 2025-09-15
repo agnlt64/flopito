@@ -41,20 +41,20 @@ export default function Course({ course, onClick, showAmphiCourses, view }: { co
       <div className="absolute top-1 right-1">
         <Plus size={16} color={course.course.module.display.color_txt} />
       </div>
-      {halfGroupLabel && <span className="absolute top-2 left-2 text-xs font-bold">{halfGroupLabel}</span>}
+      {halfGroupLabel && <span className={`absolute top-2 left-2 font-bold ${view === 'week' ? 'text-[10px] sm:text-xs' : 'text-xs'}`}>{halfGroupLabel}</span>}
       {view === 'day' ? (
         <div className="text-sm font-bold tracking-tight leading-tight">{course.course.module.name}</div>
       ) : (
         <>
           <div className="text-sm font-bold tracking-tight leading-tight hidden sm:block">{course.course.module.name}</div>
-          <div className="text-xs sm:hidden font-bold">{course.course.module.abbrev}</div>
+          <div className="text-[10px] sm:hidden font-bold">{course.course.module.abbrev}</div>
         </>
       )}
-      <div className="text-xs">
+      <div className={view === 'week' ? 'text-[10px] sm:text-xs' : 'text-xs'}>
         <span className={view === 'week' ? 'hidden sm:inline' : ''}>{room.type}: </span>
         {room.name}
       </div>
-      {duration > 60 && <div className="text-xs">
+      {duration > 60 && <div className={view === 'week' ? 'text-[10px] sm:text-xs' : 'text-xs'}>
         <span className="hidden sm:inline">Prof: </span>
         {teacher.fullName}
       </div>}

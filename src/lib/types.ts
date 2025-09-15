@@ -18,7 +18,7 @@ export interface Room {
   name: string;
 }
 
-type RoomType = 'TD' | 'AMPHI' | 'Gd-Amphi';
+type RoomType = 'TD' | 'TP' | 'AMPHI' | 'Gd-Amphi';
 
 export interface CourseDetails {
   id: number;
