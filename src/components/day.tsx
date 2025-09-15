@@ -1,5 +1,5 @@
 import Course from './course';
-import { Course as CourseType, DAYS } from '@/lib/types';
+import { Course as CourseType, DAYS, Year } from '@/lib/types';
 import { getDurationInMinutes } from '@/lib/utils';
 
 function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
@@ -40,7 +40,7 @@ function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
   return mergedCourses;
 }
 
-const CourseGroup = ({ courses, onCourseClick, showAmphiCourses, view }: { courses: CourseType[], onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week' }) => {
+const CourseGroup = ({ courses, onCourseClick, showAmphiCourses, view, selectedYear }: { courses: CourseType[], onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week', selectedYear: Year }) => {
   const top = (courses[0].start_time - 480) / 60 * 64;
   const duration = courses[0].duration || getDurationInMinutes(courses[0].course.type);
   const height = duration / 60 * 64;
@@ -55,6 +55,7 @@ const CourseGroup = ({ courses, onCourseClick, showAmphiCourses, view }: { cours
               onClick={onCourseClick}
               showAmphiCourses={showAmphiCourses}
               view={view}
+              selectedYear={selectedYear}
             />
           </div>
         ))}
@@ -64,7 +65,7 @@ const CourseGroup = ({ courses, onCourseClick, showAmphiCourses, view }: { cours
 };
 
 
-export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, view, day }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week', day: string }) {
+export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, view, day, selectedYear }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week', day: string, selectedYear: Year }) {
   const sortedCourses = courses.sort((a, b) => a.start_time - b.start_time);
   const mergedCourses = mergeConsecutiveCourses(sortedCourses);
 
@@ -95,6 +96,7 @@ export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, 
           onCourseClick={onCourseClick}
           showAmphiCourses={showAmphiCourses}
           view={view}
+          selectedYear={selectedYear}
         />
       ))}
     </div>

@@ -2,7 +2,7 @@ import { Plus } from 'lucide-react';
 import type { Course } from '@/lib/types';
 import { getDurationInMinutes, getTeacherLabel, getRoomLabel } from '@/lib/utils';
 
-export default function Course({ course, onClick, showAmphiCourses, view }: { course: Course, onClick: (course: Course) => void, showAmphiCourses: boolean, view: 'day' | 'week' }) {
+export default function Course({ course, onClick, showAmphiCourses, view, selectedYear }: { course: Course, onClick: (course: Course) => void, showAmphiCourses: boolean, view: 'day' | 'week', selectedYear: Year }) {
   const duration = course.duration || getDurationInMinutes(course.course.type);
   const height = duration / 60 * 64;
   const teacher = getTeacherLabel(course.tutor, 'N/A');
@@ -25,7 +25,7 @@ export default function Course({ course, onClick, showAmphiCourses, view }: { co
   
   const groupName = course.course.groups[0]?.name || '';
   const isHalfGroupCourse = /\d$/.test(groupName);
-  const halfGroupLabel = isHalfGroupCourse && !isAmphi ? groupName : null;
+  const halfGroupLabel = selectedYear === 'BUT1' && isHalfGroupCourse && !isAmphi ? groupName : null;
 
 
   return (
