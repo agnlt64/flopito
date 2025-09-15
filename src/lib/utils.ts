@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { TEACHERS_MAP } from "./teachers-map";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -14,7 +15,8 @@ export function getDurationInMinutes(type: string): number {
   return -1;
 }
 
-export function getRoomLabel(roomName: string, roomType: string): string {
+export function getRoomLabel(roomName: string, roomType: string): { type: string; name: string } {
+  let type = '';
   if (roomName === 'BC') {
     roomName = 'Bloc central';
   } else if (roomName === 'NA') {
@@ -23,8 +25,15 @@ export function getRoomLabel(roomName: string, roomType: string): string {
     roomName = 'Lambert (probablement)';
   }
   if (roomType === 'AMPHI') {
-    return `Amphi : ${roomName}`;
+    type = 'Amphi';
   } else {
-    return `Salle : ${roomName}`;
+    type = 'Salle';
   }
+  return { type, name: roomName };
+}
+
+export function getTeacherLabel(tutor: string | null, defaultName: string = '??'): { abbrev: string; fullName: string } {
+  const abbrev = tutor || defaultName;
+  const fullName = (tutor ? TEACHERS_MAP.get(tutor) : null) || abbrev;
+  return { abbrev, fullName };
 }

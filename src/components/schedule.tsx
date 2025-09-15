@@ -271,7 +271,7 @@ export default function Schedule() {
       )}
 
       <div className={`grid h-[832px] border-b border-gray-300 dark:border-gray-700 ${view === 'week' ? 'grid-cols-[auto_repeat(5,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
-        <div className="row-span-full flex flex-col text-right pr-2 -mt-3">
+        <div className="row-span-full flex flex-col text-right pr-1 sm:pr-2 -mt-3 text-xs sm:text-base">
           {Array.from({ length: 13 }, (_, i) => (
             <div key={i} className="h-16">{i + 8}:00</div>
           ))}

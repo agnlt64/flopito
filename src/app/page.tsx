@@ -8,7 +8,7 @@ export default function SchedulePage() {
       <div className="absolute top-4 right-4 z-20">
         <ThemeToggle />
       </div>
-      <div className="z-10 w-full p-4 font-mono">
+      <div className="z-10 w-full p-2 sm:p-4 font-mono">
         <Suspense fallback={<div>Loading...</div>}>
           <Schedule />
         </Suspense>
