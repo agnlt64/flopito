@@ -8,4 +8,5 @@
 - [Tailwind](https://tailwindcss.com)
 
 ## Contribuer
-Si vous voulez contribuer ouvrez une PR et si c'est pertinent je l'accepterai 🗿
+Si vous voulez contribuer ouvrez une PR et si c'est pertinent je l'accepterai 🗿  
+La qualité du code laisse un peu à désirer, c'est parce que j'ai vibecodé quasiment tout le site avec Gemini. Mais on s'en fout tant que ça marche et que c'est joli 😂
