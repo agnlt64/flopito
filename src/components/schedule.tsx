@@ -318,7 +318,7 @@ export default function Schedule() {
         <div className="grid grid-cols-[auto_repeat(5,1fr)] border-gray-300 dark:border-gray-700">
           <div className="col-span-1" /> {/* Empty cell for time column */}
           {displayedDays.map(day => (
-            <div key={day} className="text-center font-semibold py-2">
+            <div key={day} className="text-center font-semibold py-2 text-xs sm:text-base">
               {DAY_NAMES_MAP.get(day) || day}
             </div>
           ))}
