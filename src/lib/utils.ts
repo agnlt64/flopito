@@ -7,12 +7,33 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDurationInMinutes(type: string): number {
-  if (type.includes('1h')) return 60;
-  if (type.includes('1h30')) return 90;
-  if (type.includes('2h')) return 120;
-  if (type.includes('3h')) return 180;
-  if (type.includes('4h')) return 240;
-  return -1;
+  // The first 2 characters of the type are the type of course (e.g., TD, CM, TP),
+  // the rest is the duration.
+  const durationStr = type.substring(2);
+  let totalMinutes = 0;
+
+  if (durationStr.includes('h')) {
+    const parts = durationStr.split('h');
+    const hours = parseInt(parts[0], 10);
+    if (!isNaN(hours)) {
+      totalMinutes += hours * 60;
+    }
+
+    if (parts.length > 1 && parts[1]) {
+      const minutes = parseInt(parts[1], 10);
+      if (!isNaN(minutes)) {
+        totalMinutes += minutes;
+      }
+    }
+  } else if (durationStr) {
+    // This part handles durations that are only in minutes, e.g., "90"
+    const minutes = parseInt(durationStr, 10);
+    if (!isNaN(minutes)) {
+      totalMinutes = minutes;
+    }
+  }
+
+  return totalMinutes > 0 ? totalMinutes : -1;
 }
 
 export function getRoomLabel(roomName: string, roomType: string): { type: string; name: string } {

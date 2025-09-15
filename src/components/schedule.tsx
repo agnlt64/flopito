@@ -123,15 +123,22 @@ export default function Schedule() {
   const filteredCourses = courses.filter(course => {
     const selectedTrainProgForYear = YEAR_TRAIN_PROG_MAP[selectedYear];
 
-    const isGroupMatch = course.course.groups.some(group =>
+    let isGroupMatch = course.course.groups.some(group =>
       group.name === selectedGroup && group.train_prog === selectedTrainProgForYear
     );
+
+    if (selectedYear === 'BUT3I' && (selectedGroup === 'DV1' || selectedGroup === 'DV2')) {
+      const isDvGroupMatch = course.course.groups.some(group =>
+        group.name === 'DV' && group.train_prog === selectedTrainProgForYear
+      );
+      isGroupMatch = isGroupMatch || isDvGroupMatch;
+    }
 
     if (selectedYear === 'BUT3I') {
       return isGroupMatch;
     }
 
-    const isAmphiMatch = course.course.room_type === 'AMPHI' &&
+    const isAmphiMatch = (course.course.room_type === 'AMPHI' || course.course.room_type === 'Gd-Amphi') &&
                            course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
 
     return isGroupMatch || isAmphiMatch;

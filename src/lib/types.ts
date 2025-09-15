@@ -69,7 +69,7 @@ export const YEAR_GROUPS: Record<Year, Group[]> = {
   BUT3I: [
     { name: 'BD', year: 'BUT3I' },
     { name: 'DVA', year: 'BUT3I' },
-    { name: 'DV', year: 'BUT3I' },
+    // { name: 'DV', year: 'BUT3I' },
     { name: 'DV1', year: 'BUT3I' },
     { name: 'DV2', year: 'BUT3I' },
     { name: 'RE', year: 'BUT3I' },

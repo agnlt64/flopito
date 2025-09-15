@@ -44,7 +44,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ course, onClose }) => {
           <p><strong>Type:</strong> {course.course.type.substring(0, 2)}</p>
           <p><strong>{room.type}:</strong> {room.name}</p>
           <p><strong>Prof:</strong> {teacher.fullName}</p>
-          <p><strong>Durée:</strong> {durationHours}h{durationMinutes % 60 === 0 ? '' : ` ${durationMinutes % 60}min`}</p>
+          <p><strong>Durée:</strong> {durationHours}h{durationMinutes % 60 === 0 ? '' : `${durationMinutes % 60}min`}</p>
           <p><strong>Horaire:</strong> {formatTime(startTime)} - {formatTime(endTime)}</p>
         </div>
         <DialogFooter>
