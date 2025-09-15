@@ -118,6 +118,18 @@ export default function Schedule() {
     setCurrentDate(newDate);
   };
 
+  const handlePrevWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() - 7);
+    setCurrentDate(newDate);
+  };
+
+  const handleNextWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + 7);
+    setCurrentDate(newDate);
+  };
+
   const availableGroups = YEAR_GROUPS[selectedYear];
 
   const filteredCourses = courses.filter(course => {
@@ -287,6 +299,20 @@ export default function Schedule() {
         </div>
       )}
 
+      {view === 'week' && (
+        <div className="flex items-center justify-center mb-4">
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={handlePrevWeek}>
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          <div className="text-center mx-4 w-48 md:w-64">
+            <h2 className="text-lg md:text-xl font-semibold">Semaine {getWeekNumber(currentDate)}</h2>
+          </div>
+          <Button variant="ghost" size="icon" className="cursor-pointer" onClick={handleNextWeek}>
+            <ChevronRight className="h-6 w-6" />
+          </Button>
+        </div>
+      )}
+
       <div className={`grid h-[832px] border-b border-gray-300 dark:border-gray-700 ${view === 'week' ? 'grid-cols-[auto_repeat(5,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
         <div className="row-span-full flex flex-col text-right pr-1 sm:pr-2 -mt-3 text-xs sm:text-base">
           {Array.from({ length: 13 }, (_, i) => (
@@ -294,7 +320,7 @@ export default function Schedule() {
           ))}
         </div>
         {displayedDays.map((day, index) => (
-          <Day key={day} courses={coursesByDay[day] || []} isLast={index === displayedDays.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} view={view} day={day} />
+          <Day key={day} courses={coursesByDay[day] || []} isLast={index === displayedDays.length - 1} onCourseClick={handleCourseClick} showAmphiCourses={showAmphiCourses} view={view} day={day} selectedYear={selectedYear} />
         ))}
       </div>
 
