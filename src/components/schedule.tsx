@@ -43,9 +43,16 @@ export default function Schedule() {
   const [selectedCourseForModal, setSelectedCourseForModal] = useState<Course | null>(null);
   const initialShowAmphi = true;
   const [showAmphiCourses, setShowAmphiCourses] = useState<boolean>(initialShowAmphi);
-  const [isWarningVisible, setIsWarningVisible] = useState<boolean>(true);
+  const [isWarningVisible, setIsWarningVisible] = useState<boolean>(false);
 
   const courseCache = useRef(new Map<string, Course[]>());
+
+  useEffect(() => {
+    const warningDismissed = localStorage.getItem('warningDismissed');
+    if (!warningDismissed) {
+      setIsWarningVisible(true);
+    }
+  }, []);
 
   useEffect(() => {
     const yearParam = (searchParams.get('year') as Year);
@@ -248,7 +255,10 @@ export default function Schedule() {
                 <p className="text-sm">Cette application est juste un frontend plus joli que celui proposé par l&apos;IUT. Les salles peuvent être incorrectes. Je ne suis pas responsable des données présentes sur ce site.</p>
               </div>
             </div>
-            <button onClick={() => setIsWarningVisible(false)} className="p-1 cursor-pointer">
+            <button onClick={() => {
+              setIsWarningVisible(false);
+              localStorage.setItem('warningDismissed', 'true');
+            }} className="p-1 cursor-pointer">
               <X className="h-5 w-5" />
             </button>
           </div>
