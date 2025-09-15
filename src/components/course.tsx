@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react';
 import type { Course } from '@/lib/types';
-import { getDurationInMinutes, getRoomLabel, getTeacherLabel } from '@/lib/utils';
+import { getDurationInMinutes, getTeacherLabel, getRoomLabel } from '@/lib/utils';
 
 export default function Course({ course, onClick, showAmphiCourses, view }: { course: Course, onClick: (course: Course) => void, showAmphiCourses: boolean, view: 'day' | 'week' }) {
   const duration = course.duration || getDurationInMinutes(course.course.type);
