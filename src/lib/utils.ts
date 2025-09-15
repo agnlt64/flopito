@@ -33,7 +33,7 @@ export function getDurationInMinutes(type: string): number {
     }
   }
 
-  return totalMinutes > 0 ? totalMinutes : -1;
+  return Math.max(0, totalMinutes);
 }
 
 export function getRoomLabel(roomName: string, roomType: string): { type: string; name: string } {

@@ -153,7 +153,7 @@ export default function Schedule() {
         return isGroupMatch;
     }
 
-    return isGroupMatch || (showAmphiCourses && isAmphiMatch);
+    return isGroupMatch || isAmphiMatch;
   });
 
   const coursesByDay = filteredCourses.reduce((acc, course) => {
