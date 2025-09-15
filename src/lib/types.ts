@@ -1,5 +1,12 @@
 
 export const DAYS = ['m', 'tu', 'w', 'th', 'f'];
+export const DAY_NAMES_MAP = new Map<string, string>([
+  ['m', 'Lundi'],
+  ['tu', 'Mardi'],
+  ['w', 'Mercredi'],
+  ['th', 'Jeudi'],
+  ['f', 'Vendredi'],
+]);
 
 export interface Course {
   id: number;

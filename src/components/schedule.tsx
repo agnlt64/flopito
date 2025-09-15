@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AlertTriangle, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Course, Year, YEAR_GROUPS, DAYS } from '@/lib/types';
+import { Course, Year, YEAR_GROUPS, DAYS, DAY_NAMES_MAP } from '@/lib/types';
 import Day from './day';
 import CourseModal from './course-modal';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -313,10 +313,24 @@ export default function Schedule() {
         </div>
       )}
 
-      <div className={`grid h-[832px] border-b border-gray-300 dark:border-gray-700 ${view === 'week' ? 'grid-cols-[auto_repeat(5,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
+      {/* Day names header */}
+      {view === 'week' && (
+        <div className="grid grid-cols-[auto_repeat(5,1fr)] border-gray-300 dark:border-gray-700">
+          <div className="col-span-1" /> {/* Empty cell for time column */}
+          {displayedDays.map(day => (
+            <div key={day} className="text-center font-semibold py-2">
+              {DAY_NAMES_MAP.get(day) || day}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className={`grid h-[832px] border-gray-300 dark:border-gray-700 ${view === 'week' ? 'grid-cols-[auto_repeat(5,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
         <div className="row-span-full flex flex-col text-right pr-1 sm:pr-2 -mt-3 text-xs sm:text-base">
           {Array.from({ length: 13 }, (_, i) => (
-            <div key={i} className="h-16">{i + 8}:00</div>
+            <div key={i} className="h-16">
+              {i + 8}:00
+            </div>
           ))}
         </div>
         {displayedDays.map((day, index) => (
