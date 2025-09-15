@@ -40,9 +40,43 @@ function mergeConsecutiveCourses(courses: CourseType[]): CourseType[] {
   return mergedCourses;
 }
 
+const CourseGroup = ({ courses, onCourseClick, showAmphiCourses, view }: { courses: CourseType[], onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week' }) => {
+  const top = (courses[0].start_time - 480) / 60 * 64;
+  const duration = courses[0].duration || getDurationInMinutes(courses[0].course.type);
+  const height = duration / 60 * 64;
+
+  return (
+    <div className="absolute w-full" style={{ top: `${top}px`, height: `${height}px` }}>
+      <div className="flex h-full">
+        {courses.map((course) => (
+          <div key={course.id} className="h-full flex-1">
+            <Course
+              course={course}
+              onClick={onCourseClick}
+              showAmphiCourses={showAmphiCourses}
+              view={view}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
 export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, view, day }: { courses: CourseType[], isLast?: boolean, onCourseClick: (course: CourseType) => void, showAmphiCourses: boolean, view: 'day' | 'week', day: string }) {
   const sortedCourses = courses.sort((a, b) => a.start_time - b.start_time);
   const mergedCourses = mergeConsecutiveCourses(sortedCourses);
+
+  const courseGroups = mergedCourses.reduce((acc, course) => {
+    const group = acc.find(g => g[0].start_time === course.start_time);
+    if (group) {
+      group.push(course);
+    } else {
+      acc.push([course]);
+    }
+    return acc;
+  }, [] as CourseType[][]);
 
   const today = new Date();
   const dayIndex = (today.getDay() + 6) % 7;
@@ -54,8 +88,14 @@ export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, 
       {Array.from({ length: 13 }, (_, i) => (
         <div key={i} className="h-16 border-t border-b border-gray-300 dark:border-gray-700" />
       ))}
-      {mergedCourses.map(course => (
-        <Course key={course.id} course={course} onClick={onCourseClick} showAmphiCourses={showAmphiCourses} view={view} />
+      {courseGroups.map((group, index) => (
+        <CourseGroup
+          key={index}
+          courses={group}
+          onCourseClick={onCourseClick}
+          showAmphiCourses={showAmphiCourses}
+          view={view}
+        />
       ))}
     </div>
   );

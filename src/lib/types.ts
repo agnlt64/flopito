@@ -18,10 +18,12 @@ export interface Room {
   name: string;
 }
 
+type RoomType = 'TD' | 'AMPHI' | 'Gd-Amphi';
+
 export interface CourseDetails {
   id: number;
   type: string;
-  room_type: string;
+  room_type: RoomType;
   week: number;
   year: number;
   groups: {

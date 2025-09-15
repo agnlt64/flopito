@@ -123,25 +123,25 @@ export default function Schedule() {
   const filteredCourses = courses.filter(course => {
     const selectedTrainProgForYear = YEAR_TRAIN_PROG_MAP[selectedYear];
 
-    let isGroupMatch = course.course.groups.some(group =>
-      group.name === selectedGroup && group.train_prog === selectedTrainProgForYear
-    );
+    const courseMatchesGroup = (groupName: string) => {
+        const groupRegex = new RegExp(`^${groupName}[1-2]?$`);
+        return course.course.groups.some(g => groupRegex.test(g.name) && g.train_prog === selectedTrainProgForYear);
+    }
+
+    let isGroupMatch = courseMatchesGroup(selectedGroup);
 
     if (selectedYear === 'BUT3I' && (selectedGroup === 'DV1' || selectedGroup === 'DV2')) {
-      const isDvGroupMatch = course.course.groups.some(group =>
-        group.name === 'DV' && group.train_prog === selectedTrainProgForYear
-      );
-      isGroupMatch = isGroupMatch || isDvGroupMatch;
+      isGroupMatch = isGroupMatch || courseMatchesGroup('DV');
     }
+
+    const isAmphi = (course.course.room_type === 'AMPHI' || course.course.room_type === 'Gd-Amphi');
+    const isAmphiMatch = isAmphi && course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
 
     if (selectedYear === 'BUT3I') {
-      return isGroupMatch;
+        return isGroupMatch;
     }
 
-    const isAmphiMatch = (course.course.room_type === 'AMPHI' || course.course.room_type === 'Gd-Amphi') &&
-                           course.course.groups.some(group => group.train_prog === selectedTrainProgForYear);
-
-    return isGroupMatch || isAmphiMatch;
+    return isGroupMatch || (showAmphiCourses && isAmphiMatch);
   });
 
   const coursesByDay = filteredCourses.reduce((acc, course) => {

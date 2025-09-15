@@ -43,7 +43,7 @@ export const TEACHERS_MAP = new Map<string, string>([
     ["LuCo", "Corinne LUCET"],
     ["MaAm", "Amine MANIAR"],
     ["MaBr", "Bruno MARHIC"],
-    ["MaJe", "JeanBaptiste  MASSON"],
+    ["MaJe", "Jean-Baptiste  MASSON"],
     ["MaTo", "Tony MARÉ"],
     ["MeSy", "Sylvain MERCIER"],
     ["MoEl", "El Mustapha  MOUADDIB"],
