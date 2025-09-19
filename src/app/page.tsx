@@ -10,7 +10,7 @@ export default function SchedulePage() {
     <main className="flex min-h-screen flex-col items-center relative">
       <div className="absolute top-4 right-4 z-20 flex items-center space-x-2">
         <Button variant="ghost" className="cursor-pointer" size="icon">
-          <Link href="https://github.com/agnlt64/flopito" target="_blank" rel="noopener noreferrer">
+          <Link href="https://github.com/agnlt64/flopito" target="_blank" rel="noreferrer">
             <Github size={16} />
           </Link>
         </Button>
