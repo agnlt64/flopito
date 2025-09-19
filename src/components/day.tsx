@@ -1,3 +1,45 @@
+import { useEffect, useState } from 'react';
+// Shows a red line indicating the current time if today is displayed
+function CurrentTimeIndicator() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // starts at 8 AM (480 min), ends at 9 PM (1260 min)
+  const minutesSince8 = now.getHours() * 60 + now.getMinutes() - 480;
+  let top;
+  if (minutesSince8 < 0) {
+    top = 0; // top
+  } else if (minutesSince8 > 780) {
+    top = 13 * 64; // bottom (13 slots of 1h)
+  } else {
+    top = (minutesSince8 / 60) * 64;
+  }
+
+  return (
+    <div
+      className="absolute left-0 w-full pointer-events-none z-30"
+      style={{ top: `${top}px` }}
+    >
+      <div className="relative w-full flex items-center">
+        {/* Red line */}
+        <div className="border-t-2 border-red-500 w-full" />
+        {/* Left triangle */}
+        <span
+          className="absolute -right-2"
+          style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderRight: '8px solid #ef4444' }}
+        />
+        {/* Right triangle */}
+        <span
+          className="absolute -left-2"
+          style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '8px solid #ef4444' }}
+        />
+      </div>
+    </div>
+  );
+}
 import Course from './course';
 import { Course as CourseType, DAYS, Year } from '@/lib/types';
 import { getDurationInMinutes } from '@/lib/utils';
@@ -46,7 +88,7 @@ const CourseGroup = ({ courses, onCourseClick, showAmphiCourses, view, selectedY
   const height = duration / 60 * 64;
 
   return (
-    <div className="absolute w-full" style={{ top: `${top}px`, height: `${height}px` }}>
+    <div className="absolute w-full z-10" style={{ top: `${top}px`, height: `${height}px` }}>
       <div className="flex h-full">
         {courses.map((course) => (
           <div key={course.id} className="h-full flex-1">
@@ -86,6 +128,7 @@ export default function Day({ courses, isLast, onCourseClick, showAmphiCourses, 
 
   return (
     <div className={`relative h-full border-l ${isLast ? 'border-r' : ''} border-gray-300 dark:border-gray-700 ${isToday ? 'bg-blue-50 dark:bg-blue-950/50' : ''}`}>
+      {isToday && <CurrentTimeIndicator />}
       {Array.from({ length: 13 }, (_, i) => (
         <div key={i} className="h-16 border-t border-b border-gray-300 dark:border-gray-700" />
       ))}
